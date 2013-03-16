@@ -7,9 +7,9 @@ library(party)
 # registerDoMC(cores = 2)
 
 ######## Debug variables ###########
-do.import = F
-do.preprocess = F
-do.nom2num = F
+do.import = T
+do.preprocess = T
+do.nom2num = T
 do.transformAttr = F
 do.visualize = F
 do.analysis = F
@@ -171,6 +171,7 @@ if(do.preprocess){
   ### STEP 2 - Merge trainDescr with machine.appendix, testDescr with machine.appendix
   train.merged <- merge(trainDescr, machine.appendix, all.x=T)
   test.merged <- merge(testDescr, machine.appendix, all.x=T)
+  rm(machine.appendix)
   
   ### STEP 3 - Handle MfgYear
   train.merged$MfgYear[train.merged$MfgYear==1000] = NA

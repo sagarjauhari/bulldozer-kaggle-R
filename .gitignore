@@ -1,3 +1,9 @@
 .Rproj.user
 .Rhistory
 .RData
+trainClass.Rdata
+test.dummy.pp.Rdata
+train.dummy.pp.Rdata
+glm.pred.test.csv
+test.merged.Rdata
+train.merged.Rdata

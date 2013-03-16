@@ -34,3 +34,14 @@ getNumDistinct <- function(data){
   }
   return(numfac)
 }
+
+writeResults <- function(data,filename){
+  testData = read.csv(file="../../kaggle/bulldozers/Valid.csv", header=T)
+  id <- testDescr$SalesID
+  rm(testData)
+  the_answer <- cbind(id,data);
+  colnames(the_answer) <- c("SalesID","SalePrice")
+  
+  write.csv(the_answer,file=filename,row.names=F)
+  rm(the_answer)
+}
