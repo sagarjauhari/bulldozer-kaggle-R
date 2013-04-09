@@ -72,3 +72,8 @@ rm(attr)
 rm(f)
 rm(factors)
 
+### Keep only last record in case of resales
+print("Trashing previous data for multiple sales", quote = F)
+train.merged <- train.merged[order(train.merged$MachineID),]
+train.merged<- train.merged[!duplicated(train.merged$MachineID),]
+
