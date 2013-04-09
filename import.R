@@ -7,7 +7,3 @@ machine.appendix = read.csv(file="../../kaggle/bulldozers/Machine_Appendix.csv",
 trainClass <- read.csv(file="../trainClass.csv", header=T)
 trainDescr$SalePrice <- NULL
 print("Note: Label class present separately in trainClass", quote = F)
-print("Attributes in trainDescr:", quote = F)
-print(names(trainDescr))
-print("Attributes in testDescr:", quote = F)
-print(names(testDescr))

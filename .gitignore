@@ -7,3 +7,11 @@ train.dummy.pp.Rdata
 glm.pred.test.csv
 test.merged.Rdata
 train.merged.Rdata
+ans-rf1.csv
+ans-rf2.csv
+rf.fit.10000.noprox.Rdata
+rf.fit.100000.noprox.Rdata
+test.merged.rf.Rdata
+train.merged.rf.Rdata
+trainClass.rf.Rdata
+train_n_valid_filtered.csv

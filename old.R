@@ -9,7 +9,7 @@ library(party)
 ######## Debug variables ###########
 do.import = T
 do.preprocess = T
-do.nom2num = T
+do.nom2num = F
 do.transformAttr = F
 do.visualize = F
 do.analysis = F
