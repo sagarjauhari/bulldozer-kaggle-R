@@ -1,8 +1,8 @@
 print("Importing Data", quote = F)
 trainDescr = read.csv(file="../../kaggle/bulldozers/TrainAndValid.csv",header=T)
 machine.appendix = read.csv(file="../../kaggle/bulldozers/Machine_Appendix.csv", header=T)
-trainClass <- trainDescr[2]
-trainDescr$SalePrice <- NULL
+#trainClass <- trainDescr[2]
+#trainDescr$SalePrice <- NULL
 print("Note: Label class present separately in trainClass", quote = F)
 
 ### Remove unnecessary columns
@@ -26,7 +26,7 @@ trainDescr$ProductGroupDesc <- NULL       #Redundant
 trainDescr$fiBaseModel <- NULL            #Redundant
 
 ### Merge trainDescr with machine.appendix
-print("Merge trainDescr with machine.appendix, testDescr with machine.appendix", quote = F)
+print("Merge trainDescr with machine.appendix", quote = F)
 train.merged <- merge(trainDescr, machine.appendix, all.x=T)
 
 ### Handle MfgYear
@@ -76,4 +76,14 @@ rm(factors)
 print("Trashing previous data for multiple sales", quote = F)
 train.merged <- train.merged[order(train.merged$MachineID),]
 train.merged<- train.merged[!duplicated(train.merged$MachineID),]
+
+### Remove nearly empty columns of train.merged
+threshold = 0.01
+for(colname in names(train.merged)){
+  nonEmptyRatio = prop.table(table(is.na(train.merged[[colname]])))[1]
+  if(nonEmptyRatio < threshold){
+    train.merged[[colname]] <- NULL
+    print(sprintf("Removed %s; Only %f filled",colname,nonEmptyRatio))
+  }
+}
 
