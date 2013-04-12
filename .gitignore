@@ -15,3 +15,5 @@ test.merged.rf.Rdata
 train.merged.rf.Rdata
 trainClass.rf.Rdata
 train_n_valid_filtered.csv
+count_na.csv
+state_mean_count.csv
