@@ -21,7 +21,7 @@ rf.fit.100000.noprox <- randomForest( x=train.merged,
                         ytest=rfbench$SalePrice,
                         proximity=T,
                         do.trace=T,
-                        sampsize=100000,
+                        sampsize=100,
                         importance=T,
                         keep.forest=T
                         

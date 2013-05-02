@@ -1,9 +1,11 @@
+library(caret)
+
 print("Importing Data", quote = F)
 trainDescr = read.csv(file="../../kaggle/bulldozers/TrainAndValid.csv",header=T)
 machine.appendix = read.csv(file="../../kaggle/bulldozers/Machine_Appendix.csv", header=T)
 #trainClass <- trainDescr[2]
 #trainDescr$SalePrice <- NULL
-print("Note: Label class present separately in trainClass", quote = F)
+#print("Note: Label class present separately in trainClass", quote = F)
 
 ### Remove unnecessary columns
 print("Remove unnecessary columns", quote = F)
@@ -79,7 +81,7 @@ train.merged <- train.merged[order(train.merged$MachineID),]
 train.merged<- train.merged[!duplicated(train.merged$MachineID),]
 
 ### Remove nearly empty columns from train.merged
-threshold = 0.01
+threshold = 0.05
 for(colname in names(train.merged)){
   nonEmptyRatio = prop.table(table(is.na(train.merged[[colname]])))[1]
   if(nonEmptyRatio < threshold){
@@ -97,15 +99,15 @@ print("Converting 'Transmission' values to lower case",quote=F)
 train.merged$Transmission <- as.factor(tolower(train.merged$Transmission))
 
 #Blade_Width
-print("Converting 'Blade_Width' values to numeric",quote=F)
-bw <- as.character(train.merged$Blade_Width)
-bw[bw=="<12'"]<-11
-bw[bw=="12'"] <-12
-bw[bw=="13'"] <-13
-bw[bw=="14'"] <-14
-bw[bw=="16'"] <-16
-train.merged$Blade_Width<-as.numeric(bw)
-rm(bw)
+# print("Converting 'Blade_Width' values to numeric",quote=F)
+# bw <- as.character(train.merged$Blade_Width)
+# bw[bw=="<12'"]<-11
+# bw[bw=="12'"] <-12
+# bw[bw=="13'"] <-13
+# bw[bw=="14'"] <-14
+# bw[bw=="16'"] <-16
+# train.merged$Blade_Width<-as.numeric(bw)
+# rm(bw)
 
 #Engine_Horsepower
 train.merged$Engine_Horsepower <- NULL #Useless
@@ -133,18 +135,62 @@ train.merged$Tire_Size <- as.numeric(ts)
 rm(ts)
 
 #Undercarriage_Pad_width
-print("Converting 'Undercarriage_Pad_width' values to numeric",quote=F)
-train.merged$Undercarriage_Pad_Width <- 
-  as.numeric(substr(as.character(train.merged$Undercarriage_Pad_Width),1,2))
+# print("Converting 'Undercarriage_Pad_width' values to numeric",quote=F)
+# train.merged$Undercarriage_Pad_Width <- 
+#   as.numeric(substr(as.character(train.merged$Undercarriage_Pad_Width),1,2))
 
 #Stick_Length
-print("Converting 'Stick_Length' values to numeric",quote=F)
-sl <- strsplit(as.character(train.merged$Stick_Length),"'")
-sl <- sapply(sl,function(item){item[1]})
-train.merged$Stick_Length <- as.numeric(sl)
-rm(sl)
+# print("Converting 'Stick_Length' values to numeric",quote=F)
+# sl <- strsplit(as.character(train.merged$Stick_Length),"'")
+# sl <- sapply(sl,function(item){item[1]})
+# train.merged$Stick_Length <- as.numeric(sl)
+# rm(sl)
+
+#Near zero variance predictors
+print("Removing near zero predictors",quote=F)
+nzr <- nearZeroVar(train.merged)
+print(names(train.merged[,nzr]))
+train.merged <- train.merged[,-nzr]
+rm(nzr)
+
+#-------------------------------------------------
+
+# Remove NAs
+print("Assigning missing class to all factor NAs",quote=F)
+for(n in names(train.merged)){
+  if(is.factor(train.merged[[n]])){
+    train.merged[[n]] <- factor(train.merged[[n]], levels = c(levels(train.merged[[n]]), "missing"))
+    v <- is.na(train.merged[[n]])
+    train.merged[[n]][v] <- "missing"
+  }
+}
+
+
+
+#Primary Size Basis
+print("Splitting on the basis of PrimarySizeBasis",quote=F)
+tm.psb1 <- train.merged[(train.merged$PrimarySizeBasis %in% 'Horsepower'),]
+tm.psb2 <- train.merged[(train.merged$PrimarySizeBasis %in% 'Operating Capacity - Lbs'),]
+tm.psb3 <- train.merged[(train.merged$PrimarySizeBasis %in% 'Standard Digging Depth - Ft'),]
+tm.psb4 <- train.merged[(train.merged$PrimarySizeBasis %in% 'Weight - Metric Tons'),]
+tm.psbna <- train.merged[is.na(train.merged$PrimarySizeBasis),]
+tm.psb1$PrimarySizeBasis<- NULL
+tm.psb2$PrimarySizeBasis<- NULL
+tm.psb3$PrimarySizeBasis<- NULL
+tm.psb4$PrimarySizeBasis<- NULL
+tm.psbna$PrimarySizeBasis<- NULL
+
+# Mean Imputation for numeric attributes
+print("Mean imputation for numeric attributes",quote=F)
+for(n in names(tm.psb1)){
+  if(!is.factor(tm.psb1[[n]])){
+    v <- is.na(tm.psb1[[n]])
+    tm.psb1[[n]][v] <- mean(tm.psb1[[n]],na.rm=T)
+  }
+}
 
 
 #Refresh levels of factor variables
+print("Refreshing levels of train.merged",quote=F)
 train.merged<- droplevels(train.merged)
 
